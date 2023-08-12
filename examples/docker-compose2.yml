@@ -1,0 +1,431 @@
+# start up with 'docker-compose up -d' to start in background
+# update images with 'docker-compose pull'
+# this assumes that you have a sibling directory to this file called 'config' that contains all of the config for these services
+# you can reference 'sabnzbd' 'radarr' or 'sonarr' from inside the containers (in the apps) to reference the other containers. no need to deal with IPs or hostnames
+# remember that docker is isolated from the rest of your filesystem. you need to add volumes to the entries
+# in order to give the processes access to them. so if you have multiple target directories for TV or Movies,
+# then make sure you add each one that you want radarr/sonarr/sabnzbd to see.
+
+version: '3.4'
+services:
+  proxy:
+    container_name: proxy
+    image: traefik:v2.4
+    restart: always
+    command:
+      - "--global.sendAnonymousUsage=false"
+      - "--providers.docker"
+      - "--providers.docker.exposedByDefault=false"
+      - "--entrypoints.web.address=:80"
+      - "--entrypoints.websecure.address=:443"
+      - "--entryPoints.web.forwardedHeaders.trustedIPs=127.0.0.1/32,192.168.86.0/24,172.18.0.1/24,172.19.0.0/24"
+      - "--certificatesresolvers.tmhttpchallenge.acme.tlschallenge=true"
+      - "--certificatesresolvers.tmhttpchallenge.acme.email=${LETSENCRYPT_EMAIL}"
+      - "--certificatesresolvers.tmhttpchallenge.acme.storage=/etc/acme/acme.json"
+      - "--log.filePath=/var/log/traefik.log"
+      - "--log.level=DEBUG"
+      - "--log.format=json"
+    ports:
+      - 8080:80
+      - 8443:443
+    volumes:
+      - ${CONFIG_DIR}/tesla_mate/.htpasswd:/auth/.htpasswd
+      - ${CONFIG_DIR}/tesla_mate/logs:/var/log
+      - /home/tds/Documents/acme/:/etc/acme/
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    extra_hosts:
+      - host.docker.internal:192.168.x.x
+
+  radarr:
+    container_name: radarr
+    image: mdhiggins/radarr-sma
+    restart: always
+    networks:
+      srj_net:
+        ipv4_address: 172.28.0.2
+    ports:
+      - "7878:7878" # port mapping
+    volumes:
+      - "${CONFIG_DIR}/radarr:/config" # config directory for radarr
+      - "${PLEX_DIR}/Download_Complete:/downloads" # completed downloads directory from sab
+      - "${PLEX_DIR}/sickbeard_mp4_automator/autoProcess.ini:/usr/local/bin/sma/sickbeard_mp4_automator/autoProcess.ini:ro"
+      - "${PLEX_DIR}:/movies" # where radarr will copy your movies. add as many of these as you need
+      - "${PLEX_DIR}:/plexmedia"
+    environment:
+      TZ: America/Chicago
+      PUID: 1001 # set this to the UID of your user
+      PGID: 1001 # set this to the GID of your user
+
+  sonarr:
+    container_name: sonarr
+    image: mdhiggins/sonarr-sma
+    restart: always
+    networks:
+      srj_net:
+        ipv4_address: 172.28.0.3
+    ports:
+      - "8989:8989" # port mapping
+    volumes:
+      - "${CONFIG_DIR}/sonarr:/config"
+      - "${PLEX_DIR}/sickbeard_mp4_automator/autoProcess.ini:/usr/local/bin/sma/sickbeard_mp4_automator/autoProcess.ini:ro"
+      - "${PLEX_DIR}/sickbeard_mp4_automator:/usr/local/sma/config"
+      - "${PLEX_DIR}:/tv"
+      - "${PLEX_DIR}/Download_Complete:/downloads"
+      - "${PLEX_DIR}:/plexmedia"
+    environment:
+      TZ: America/Chicago
+      PUID: 1001 # set this to the UID of your user
+      PGID: 1001
+
+  lidarr:
+    container_name: lidarr
+    image: hotio/lidarr:nightly
+    restart: always
+    networks:
+      srj_net:
+        ipv4_address: 172.28.0.7
+    ports:
+      - "8686:8686" # port mapping
+    volumes:
+      - "${CONFIG_DIR}/lidarr:/config"
+      - "${PLEX_DIR}:/music"
+      - "${PLEX_DIR}/Download_Complete:/downloads"
+      - "${PLEX_DIR}:/plexmedia"
+    environment:
+      TZ: America/Chicago
+      PUID: 1001 # set this to the UID of your user
+      PGID: 1001
+
+  prowlarr:
+    container_name: prowlarr
+    image: hotio/prowlarr:testing
+    restart: always
+    network_mode: host
+    ports:
+      - "9696:9696"
+    volumes:
+      - "${CONFIG_DIR}/prowlarr:/config"
+      - "${PLEX_DIR}:/downloads"
+    environment:
+      TZ: America/Chicago
+      PUID: 1000
+      PGID: 1000
+
+  flaresolverr:
+    container_name: flaresolverr
+    image: flaresolverr/flaresolverr
+    restart: always
+    network_mode: host
+    environment:
+      TZ: America/Chicago
+      PUID: 1000
+      PGID: 1000
+    ports:
+      - "8191:8191"
+
+  tautulli:
+    container_name: tautulli
+    image: linuxserver/tautulli
+    restart: unless-stopped
+    ports:
+      - "8181:8181"
+    volumes:
+      - "${CONFIG_DIR}/tautulli:/config"
+      - "${CONFIG_DIR}/tautulli/logs:/logs"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.port=8181"
+      - "traefik.http.middlewares.redirect.redirectscheme.scheme=https"
+      - "traefik.http.routers.tautulli-insecure.rule=Host(`${FQDN_TAUT}`)"
+      - "traefik.http.routers.tautulli-insecure.middlewares=redirect"
+      - "traefik.http.routers.tautulli.rule=Host(`${FQDN_TAUT}`)"
+      - "traefik.http.routers.tautulli.tls=true"
+      - "traefik.http.routers.tautulli.entrypoints=websecure"
+      - "traefik.http.routers.tautulli.tls.certresolver=tmhttpchallenge"
+      - "traefik.http.services.tautulli.loadBalancer.server.port=8181"
+    environment:
+      TZ: America/Chicago
+      PUID: 1000
+      PGID: 1000
+
+  vpn:
+    container_name: nordvpn
+    image: bubuntux/nordlynx
+    restart: unless-stopped
+    networks:
+      srj_net:
+        ipv4_address: 172.28.0.6
+    devices: 
+      - /dev/net/tun
+    cap_add:
+      - NET_ADMIN
+      - NET_RAW
+      - SYS_MODULE
+    environment:  # https://github.com/bubuntux/nordlynx#environment
+      - PRIVATE_KEY=$NORD_PRIVATE_KEY
+      - ALLOWED_IPS=0.0.0.0/1,128.0.0.0/1
+      - NET_LOCAL=192.168.86.0/24,172.17.0.0/12,172.28.0.0/12  # So it can be accessed within the local network
+      - LISTEN_PORT=51820
+      - "POST_UP=ip -4 route add $$(wg | awk -F'[: ]' '/endpoint/ {print $$5}') via $$(ip route | awk '/default/ {print $$3}')"
+      - "PRE_DOWN=ip -4 route del $$(route -n | awk '/255.255.255.255/ {print $$1}') via $$(ip route | awk '/default/ {print $$3}')"
+    sysctls:
+      - net.ipv4.conf.all.src_valid_mark=1
+      - net.ipv6.conf.all.disable_ipv6=1  # Recomended if using ipv4 only
+    ports:
+      - 6881:6881
+      - 6881:6881/udp
+      - 8088:8088
+  torrent:
+    container_name: qbittorrent
+    image: linuxserver/qbittorrent
+    restart: unless-stopped
+    network_mode: service:vpn
+    environment:
+      - WEBUI_PORT=8088
+      - PUID=1000
+      - PGID=1000
+    volumes:
+      - ${CONFIG_DIR}/qbittorrent:/config
+      - ${PLEX_DIR}/Download_Complete:/download_complete
+      - ${PLEX_DIR}/Downloads:/downloads
+    depends_on:
+      - vpn
+
+  overseerr:
+    container_name: overseerr
+    image: sctx/overseerr:latest
+    restart: unless-stopped
+    # ports:
+    #   - "5055:5055"
+    network_mode: host
+    volumes:
+      - "${CONFIG_DIR}/overseerr:/app/config"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.port=5055"
+      - "traefik.http.middlewares.redirect.redirectscheme.scheme=https"
+      - "traefik.http.routers.over-insecure.rule=Host(`${FQDN_OVER}`) || Host(`${FQDN_OMBI}`)"
+      - "traefik.http.routers.over-insecure.middlewares=redirect"
+      - "traefik.http.middlewares.ombi-redirect.redirectregex.regex=^https?://${FQDN_OMBI}.*"
+      - "traefik.http.middlewares.ombi-redirect.redirectregex.replacement=https://${FQDN_OVER}/"
+      - "traefik.http.middlewares.ombi-redirect.redirectregex.permanent=true"
+      - "traefik.http.routers.over.middlewares=ombi-redirect"
+      - "traefik.http.routers.over.rule=Host(`${FQDN_OVER}`) || Host(`${FQDN_OMBI}`)"
+      - "traefik.http.routers.over.tls=true"
+      - "traefik.http.routers.over.entrypoints=websecure"
+      - "traefik.http.routers.over.tls.certresolver=tmhttpchallenge"
+      - "traefik.http.services.over.loadBalancer.server.port=5055"
+    environment:
+      TZ: America/Chicago
+      PUID: 1000
+      PGID: 1000
+
+  plex:
+    container_name: plex
+    image: linuxserver/plex
+    #image: plexinc/pms-docker
+    restart: unless-stopped
+    environment:
+      - TZ=America/Chicago
+      - PLEX_CLAIM=${PLEX_CLAIM}
+      - DOCKER_MODS=gilbn/theme.park:plex
+      - PUID=1000
+      - PGID=1000
+    network_mode: host
+    volumes:
+      - /opt/plex:/config
+      - /opt/plex/tmp:/transcode
+      - ${PLEX_DIR}:/data
+
+  home-assistant:
+     container_name: home-assistant
+     image: homeassistant/home-assistant:dev
+     restart: unless-stopped
+     ports:
+       - "8123:8123"
+     expose:
+       - 8123
+     environment:
+       - TZ=America/Chicago
+     volumes:
+       - ${PLEX_DIR}/hass_configs:/config
+     network_mode: host
+     labels:
+       - "traefik.enable=true"
+       - "traefik.port=8123"
+       - "traefik.http.middlewares.redirect.redirectscheme.scheme=https"
+       - "traefik.http.routers.ha-insecure.rule=Host(`${FQDN_HA}`)"
+       - "traefik.http.routers.ha-insecure.middlewares=redirect"
+       - "traefik.http.routers.ha.rule=Host(`${FQDN_HA}`)"
+       - "traefik.http.routers.ha.tls.domains[0].main=${FQDN_HA}"
+       - "traefik.http.routers.ha.tls=true"
+       - "traefik.http.routers.ha.entrypoints=websecure"
+       - "traefik.http.routers.ha.tls.certresolver=tmhttpchallenge"
+       - "traefik.http.services.ha.loadBalancer.server.port=8123"
+
+  teslamate:
+    container_name: teslamate
+    image: teslamate/teslamate:latest
+    restart: always
+    depends_on:
+      - database
+    environment:
+      - DATABASE_USER=${TM_DB_USER}
+      - DATABASE_PASS=${TM_DB_PASS}
+      - DATABASE_NAME=${TM_DB_NAME}
+      - DATABASE_HOST=database
+      - MQTT_HOST=192.168.86.37 #mosquitto
+      - VIRTUAL_HOST=${FQDN_TM}
+      - CHECK_ORIGIN=true
+      - TZ=${TM_TZ}
+    volumes:
+      - ${CONFIG_DIR}/tesla_mate/import:/opt/app/import
+    labels:
+      - "traefik.enable=true"
+      - "traefik.port=4000"
+      - "traefik.http.middlewares.redirect.redirectscheme.scheme=https"
+      - "traefik.http.middlewares.auth.basicauth.usersfile=/auth/.htpasswd"
+      - "traefik.http.routers.teslamate-insecure.rule=Host(`${FQDN_TM}`)"
+      - "traefik.http.routers.teslamate-insecure.middlewares=redirect"
+      - "traefik.http.routers.teslamate-ws.rule=Host(`${FQDN_TM}`) && Path(`/live/websocket`)"
+      - "traefik.http.routers.teslamate-ws.entrypoints=websecure"
+      - "traefik.http.routers.teslamate-ws.tls"
+      - "traefik.http.routers.teslamate.rule=Host(`${FQDN_TM}`)"
+      - "traefik.http.routers.teslamate.middlewares=auth"
+      - "traefik.http.routers.teslamate.entrypoints=websecure"
+      - "traefik.http.routers.teslamate.tls.certresolver=tmhttpchallenge"
+      - "traefik.http.services.teslamate.loadBalancer.server.port=4000"
+    cap_drop:
+      - all
+
+  database:
+    container_name: tesla_db
+    image: postgres:12
+    restart: always
+    environment:
+      - POSTGRES_USER=${TM_DB_USER}
+      - POSTGRES_PASSWORD=${TM_DB_PASS}
+      - POSTGRES_DB=${TM_DB_NAME}
+    volumes:
+      - teslamate-db:/var/lib/postgresql/data
+
+  # monitoring:
+  #   image: nicolargo/glances:latest-alpine
+  #   restart: always
+  #   pid: host
+  #   network_mode: host
+  #   volumes:
+  #     - /var/run/docker.sock:/var/run/docker.sock
+  #   environment:
+  #     - "GLANCES_OPT=-w"
+
+  grafana:
+    container_name: tesla_grafana
+    image: teslamate/grafana:latest
+    restart: always
+    environment:
+      - DATABASE_USER=${TM_DB_USER}
+      - DATABASE_PASS=${TM_DB_PASS}
+      - DATABASE_NAME=${TM_DB_NAME}
+      - DATABASE_HOST=database
+      - GRAFANA_PASSWD=${GRAFANA_PW}
+      - GF_SECURITY_ADMIN_USER=${GRAFANA_USER}
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_PW}
+      - GF_AUTH_BASIC_ENABLED=true
+      - GF_AUTH_ANONYMOUS_ENABLED=false
+      - GF_SERVER_ROOT_URL=https://${FQDN_GRAFANA}
+    volumes:
+      - teslamate-grafana-data:/var/lib/grafana
+    labels:
+      - "traefik.enable=true"
+      - "traefik.port=3000"
+      - "traefik.http.middlewares.redirect.redirectscheme.scheme=https"
+      - "traefik.http.routers.grafana-insecure.rule=Host(`${FQDN_GRAFANA}`)"
+      - "traefik.http.routers.grafana-insecure.middlewares=redirect"
+      - "traefik.http.routers.grafana.rule=Host(`${FQDN_GRAFANA}`)"
+      - "traefik.http.routers.grafana.entrypoints=websecure"
+      - "traefik.http.routers.grafana.tls.certresolver=tmhttpchallenge"
+      - "traefik.http.services.grafana.loadBalancer.server.port=3000"
+
+  mosquitto:
+    container_name: tesla_mosquitto
+    image: eclipse-mosquitto:1.6
+    restart: always
+    network_mode: host
+    ports:
+      - 127.0.0.1:1883:1883
+    volumes:
+      - mosquitto-conf:/mosquitto/config
+      - mosquitto-data:/mosquitto/data
+
+  foundry:
+    image: felddy/foundryvtt:release
+    container_name: foundryvtt
+    restart: "unless-stopped"
+    volumes:
+      - ${CONFIG_DIR}/foundryvtt:/data
+    environment:
+       - FOUNDRY_PASSWORD=${FOUNDRY_PASSWORD}
+       - FOUNDRY_USERNAME=${FOUNDRY_USERNAME}
+       - FOUNDRY_ADMIN_KEY=${FOUNDRY_ADMIN_KEY}
+       - FOUNDRY_GID=1000
+       - FOUNDRY_UID=1000
+    ports:
+      - "30000:30000"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.port=30000"
+      - "traefik.http.middlewares.redirect.redirectscheme.scheme=https"
+      - "traefik.http.routers.foundry-insecure.rule=Host(`${FQDN_FOUNDRY}`)"
+      - "traefik.http.routers.foundry-insecure.middlewares=redirect"
+      - "traefik.http.routers.foundry.rule=Host(`${FQDN_FOUNDRY}`)"
+      - "traefik.http.routers.foundry.entrypoints=websecure"
+      - "traefik.http.routers.foundry.tls.certresolver=tmhttpchallenge"
+      - "traefik.http.services.foundry.loadBalancer.server.port=30000"
+
+  pihole:
+    container_name: pihole
+    image: pihole/pihole:latest
+    network_mode: host
+    environment:
+      TZ: 'America/Chicago'
+      WEBPASSWORD: ${PIHOLE_PASSWORD}
+      ServerIP: '192.168.x.x'
+      INTERFACE: eno1
+    dns:
+      - 127.0.0.1
+      - 1.1.1.1
+    volumes:
+      - '${CONFIG_DIR}/pihole/etc-pihole/:/etc/pihole/'
+      - '${CONFIG_DIR}/pihole/etc-dnsmasq.d/:/etc/dnsmasq.d/'
+    cap_add:
+      - NET_ADMIN
+    restart: unless-stopped
+
+  ring-mqtt:
+    container_name: ring_mqtt
+    image: tsightler/ring-mqtt
+    network_mode: host
+    environment:
+      TZ: 'America/Chicago'
+      MQTTHOST: 127.0.0.1
+      MQTTPORT: 1883
+      RINGTOKEN: ${RINGTOKEN}
+    volumes:
+      - '${CONFIG_DIR}/ring-mqtt/:/data/'
+    restart: unless-stopped
+
+networks:
+  srj_net:
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.28.0.0/16
+
+volumes:
+  teslamate-db:
+  teslamate-grafana-data:
+  mosquitto-conf:
+  mosquitto-data:
+  ring-mosquitto-conf:
+  ring-mosquitto-data:
