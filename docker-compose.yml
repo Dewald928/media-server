@@ -93,6 +93,7 @@ services:
 
 networks:
   arr:
+    name: arr
     # external: true # Use an existing network called "arr" if it exists, otherwise create it
     driver: bridge
     driver_opts:
