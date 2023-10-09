@@ -91,13 +91,21 @@ services:
       arr:
         ipv4_address: 172.19.0.4
 
+  homarr:
+    container_name: homarr
+    image: ghcr.io/ajnart/homarr:latest
+    restart: unless-stopped
+    volumes:
+      - ./homarr/configs:/app/data/configs
+      - ./homarr/icons:/app/public/icons
+    ports:
+      - "7575:7575"
+
 networks:
   arr:
     name: arr
     # external: true # Use an existing network called "arr" if it exists, otherwise create it
     driver: bridge
-    driver_opts:
-      com.docker.network.bridge.enable_ip_masquerade: "false"
     ipam:
       config:
         - subnet: "172.19.0.0/16" # Replace with your desired subnet
