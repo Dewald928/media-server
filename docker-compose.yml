@@ -101,6 +101,19 @@ services:
     ports:
       - "7575:7575"
 
+  tautulli:
+    image: ghcr.io/tautulli/tautulli
+    container_name: tautulli
+    restart: unless-stopped
+    volumes:
+      - $ROOT_DIR/config/tautulli:/config
+    environment:
+      - PUID=$PUID
+      - PGID=$PGID
+      - TZ=$TZ
+    ports:
+      - 8181:8181
+
 networks:
   arr:
     name: arr
