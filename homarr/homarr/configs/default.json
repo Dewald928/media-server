@@ -12,156 +12,9 @@
   ],
   "apps": [
     {
-      "id": "38fc1049-b5ee-41ce-9165-3ef02a1cc2ec",
-      "name": "Adguard",
-      "url": "https://homarr.dev",
-      "appearance": {
-        "iconUrl": "https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/png/adguard-home.png",
-        "appNameStatus": "normal",
-        "appNameFontSize": 16,
-        "positionAppName": "column",
-        "lineClampAppName": 1
-      },
-      "network": {
-        "enabledStatusChecker": true,
-        "statusCodes": [
-          "200",
-          "301",
-          "302",
-          "304",
-          "307",
-          "308"
-        ]
-      },
-      "behaviour": {
-        "isOpeningNewTab": true,
-        "externalUrl": "https://homarr.dev"
-      },
-      "area": {
-        "type": "wrapper",
-        "properties": {
-          "id": "default"
-        }
-      },
-      "shape": {
-        "lg": {
-          "location": {
-            "x": 8,
-            "y": 3
-          },
-          "size": {
-            "width": 1,
-            "height": 1
-          }
-        }
-      },
-      "integration": {
-        "type": null,
-        "properties": []
-      }
-    },
-    {
-      "id": "1b8a4029-5527-421b-a1f2-fd391a3c3e8b",
-      "name": "Radarr",
-      "url": "http://192.168.3.131:7878",
-      "appearance": {
-        "iconUrl": "https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/png/radarr.png",
-        "appNameStatus": "normal",
-        "appNameFontSize": 16,
-        "positionAppName": "column",
-        "lineClampAppName": 1
-      },
-      "network": {
-        "enabledStatusChecker": true,
-        "statusCodes": [
-          "200",
-          "301",
-          "302",
-          "304",
-          "307",
-          "308"
-        ]
-      },
-      "behaviour": {
-        "isOpeningNewTab": true,
-        "externalUrl": "http://192.168.3.131:7878"
-      },
-      "area": {
-        "type": "wrapper",
-        "properties": {
-          "id": "default"
-        }
-      },
-      "shape": {
-        "lg": {
-          "location": {
-            "x": 0,
-            "y": 1
-          },
-          "size": {
-            "width": 1,
-            "height": 1
-          }
-        }
-      },
-      "integration": {
-        "type": null,
-        "properties": []
-      }
-    },
-    {
-      "id": "86a48b34-4829-4822-8d1c-4c42a00b6181",
-      "name": "qbittorrent",
-      "url": "http://192.168.3.131:8090",
-      "appearance": {
-        "iconUrl": "https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/png/qbittorrent.png",
-        "appNameStatus": "normal",
-        "appNameFontSize": 16,
-        "positionAppName": "column",
-        "lineClampAppName": 1
-      },
-      "network": {
-        "enabledStatusChecker": true,
-        "statusCodes": [
-          "200",
-          "301",
-          "302",
-          "304",
-          "307",
-          "308"
-        ]
-      },
-      "behaviour": {
-        "isOpeningNewTab": true,
-        "externalUrl": "http://192.168.3.131:8090"
-      },
-      "area": {
-        "type": "wrapper",
-        "properties": {
-          "id": "default"
-        }
-      },
-      "shape": {
-        "lg": {
-          "location": {
-            "x": 0,
-            "y": 2
-          },
-          "size": {
-            "width": 1,
-            "height": 1
-          }
-        }
-      },
-      "integration": {
-        "type": null,
-        "properties": []
-      }
-    },
-    {
-      "id": "330e7e26-8ca9-4d0c-9ef8-d1fa570a6524",
+      "id": "e58015c2-b950-41c2-9e44-199180c60d89",
       "name": "Prowlarr",
-      "url": "http://192.168.3.131:9696",
+      "url": "http://192.168.3.42:9696/",
       "appearance": {
         "iconUrl": "https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/png/prowlarr.png",
         "appNameStatus": "normal",
@@ -182,7 +35,7 @@
       },
       "behaviour": {
         "isOpeningNewTab": true,
-        "externalUrl": "http://192.168.3.131:9696"
+        "externalUrl": "http://192.168.3.42:9696/"
       },
       "area": {
         "type": "wrapper",
@@ -194,7 +47,7 @@
         "lg": {
           "location": {
             "x": 1,
-            "y": 2
+            "y": 1
           },
           "size": {
             "width": 1,
@@ -208,11 +61,11 @@
       }
     },
     {
-      "id": "5ff45563-9981-4dcb-aef2-ffbb6330a3b6",
-      "name": "Proxmox",
-      "url": "http://192.168.3.50:8006",
+      "id": "d3f4a2df-0f5b-465c-8414-ce08907d67d7",
+      "name": "qbittorrent",
+      "url": "http://192.168.3.42:8090/",
       "appearance": {
-        "iconUrl": "https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/png/proxmox.png",
+        "iconUrl": "https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/png/qbittorrent.png",
         "appNameStatus": "normal",
         "appNameFontSize": 16,
         "positionAppName": "column",
@@ -231,7 +84,56 @@
       },
       "behaviour": {
         "isOpeningNewTab": true,
-        "externalUrl": "http://192.168.3.50:8006"
+        "externalUrl": "http://192.168.3.42:8090/"
+      },
+      "area": {
+        "type": "wrapper",
+        "properties": {
+          "id": "default"
+        }
+      },
+      "shape": {
+        "lg": {
+          "location": {
+            "x": 2,
+            "y": 1
+          },
+          "size": {
+            "width": 1,
+            "height": 1
+          }
+        }
+      },
+      "integration": {
+        "type": null,
+        "properties": []
+      }
+    },
+    {
+      "id": "5ae394ef-f409-418e-8cb5-a28714a81598",
+      "name": "Sonarr",
+      "url": "http://192.168.3.42:8989/",
+      "appearance": {
+        "iconUrl": "https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/png/sonarr.png",
+        "appNameStatus": "normal",
+        "appNameFontSize": 16,
+        "positionAppName": "column",
+        "lineClampAppName": 1
+      },
+      "network": {
+        "enabledStatusChecker": true,
+        "statusCodes": [
+          "200",
+          "301",
+          "302",
+          "304",
+          "307",
+          "308"
+        ]
+      },
+      "behaviour": {
+        "isOpeningNewTab": true,
+        "externalUrl": "http://192.168.3.42:8989/"
       },
       "area": {
         "type": "wrapper",
@@ -257,9 +159,9 @@
       }
     },
     {
-      "id": "ecfbbf0f-9304-4ca7-ae5f-d605d16fdb7e",
-      "name": "Plex",
-      "url": "http://192.168.3.131:32400/web",
+      "id": "262e8485-844e-405a-a227-e83441815527",
+      "name": "plex",
+      "url": "http://192.168.3.42:32400/web/",
       "appearance": {
         "iconUrl": "https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/png/plex.png",
         "appNameStatus": "normal",
@@ -280,7 +182,7 @@
       },
       "behaviour": {
         "isOpeningNewTab": true,
-        "externalUrl": "http://192.168.3.131:32400/web"
+        "externalUrl": "http://192.168.3.42:32400/web/"
       },
       "area": {
         "type": "wrapper",
@@ -291,8 +193,112 @@
       "shape": {
         "lg": {
           "location": {
-            "x": 6,
+            "x": 3,
             "y": 0
+          },
+          "size": {
+            "width": 1,
+            "height": 1
+          }
+        }
+      },
+      "integration": {
+        "type": null,
+        "properties": []
+      }
+    },
+    {
+      "id": "3f4fb85e-a2eb-4b86-afef-ff3eebb730b3",
+      "name": "Radarr",
+      "url": "http://192.168.3.42:7878/",
+      "appearance": {
+        "iconUrl": "https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/png/radarr.png",
+        "appNameStatus": "normal",
+        "appNameFontSize": 16,
+        "positionAppName": "column",
+        "lineClampAppName": 1
+      },
+      "network": {
+        "enabledStatusChecker": true,
+        "statusCodes": [
+          "200",
+          "301",
+          "302",
+          "304",
+          "307",
+          "308"
+        ]
+      },
+      "behaviour": {
+        "isOpeningNewTab": true,
+        "externalUrl": "http://192.168.3.42:7878/"
+      },
+      "area": {
+        "type": "wrapper",
+        "properties": {
+          "id": "default"
+        }
+      },
+      "shape": {
+        "lg": {
+          "location": {
+            "x": 5,
+            "y": 0
+          },
+          "size": {
+            "width": 1,
+            "height": 1
+          }
+        }
+      },
+      "integration": {
+        "type": "radarr",
+        "properties": [
+          {
+            "field": "apiKey",
+            "type": "private",
+            "value": "2618230aa8b24abdb0a722741f350a09"
+          }
+        ]
+      }
+    },
+    {
+      "id": "4736c072-ac8a-41f3-821e-b73ee872d05c",
+      "name": "Readarr",
+      "url": "http://192.168.3.42:8787/",
+      "appearance": {
+        "iconUrl": "https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/png/readarr.png",
+        "appNameStatus": "normal",
+        "appNameFontSize": 16,
+        "positionAppName": "column",
+        "lineClampAppName": 1
+      },
+      "network": {
+        "enabledStatusChecker": true,
+        "statusCodes": [
+          "200",
+          "301",
+          "302",
+          "304",
+          "307",
+          "308"
+        ]
+      },
+      "behaviour": {
+        "isOpeningNewTab": true,
+        "externalUrl": "http://192.168.3.42:8787/"
+      },
+      "area": {
+        "type": "wrapper",
+        "properties": {
+          "id": "default"
+        }
+      },
+      "shape": {
+        "lg": {
+          "location": {
+            "x": 0,
+            "y": 1
           },
           "size": {
             "width": 1,
@@ -360,161 +366,14 @@
         },
         "lg": {
           "location": {
-            "x": 9,
-            "y": 3
+            "x": 0,
+            "y": 2
           },
           "size": {
             "width": 1,
             "height": 1
           }
         }
-      }
-    },
-    {
-      "id": "4df0f624-3d85-448f-8247-358c7630d281",
-      "name": "Readarr",
-      "url": "http://192.168.3.131:8787",
-      "appearance": {
-        "iconUrl": "https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/png/readarr.png",
-        "appNameStatus": "normal",
-        "appNameFontSize": 16,
-        "positionAppName": "column",
-        "lineClampAppName": 1
-      },
-      "network": {
-        "enabledStatusChecker": true,
-        "statusCodes": [
-          "200",
-          "301",
-          "302",
-          "304",
-          "307",
-          "308"
-        ]
-      },
-      "behaviour": {
-        "isOpeningNewTab": true,
-        "externalUrl": "http://192.168.3.131:8787"
-      },
-      "area": {
-        "type": "wrapper",
-        "properties": {
-          "id": "default"
-        }
-      },
-      "shape": {
-        "lg": {
-          "location": {
-            "x": 2,
-            "y": 1
-          },
-          "size": {
-            "width": 1,
-            "height": 1
-          }
-        }
-      },
-      "integration": {
-        "type": null,
-        "properties": []
-      }
-    },
-    {
-      "id": "b771bd22-5b55-4358-933b-384779d832fd",
-      "name": "Tautili",
-      "url": "http://192.168.3.131:8181",
-      "appearance": {
-        "iconUrl": "https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/png/tautulli.png",
-        "appNameStatus": "normal",
-        "appNameFontSize": 16,
-        "positionAppName": "column",
-        "lineClampAppName": 1
-      },
-      "network": {
-        "enabledStatusChecker": true,
-        "statusCodes": [
-          "200",
-          "301",
-          "302",
-          "304",
-          "307",
-          "308"
-        ]
-      },
-      "behaviour": {
-        "isOpeningNewTab": true,
-        "externalUrl": "http://192.168.3.131:8181"
-      },
-      "area": {
-        "type": "wrapper",
-        "properties": {
-          "id": "default"
-        }
-      },
-      "shape": {
-        "lg": {
-          "location": {
-            "x": 6,
-            "y": 1
-          },
-          "size": {
-            "width": 1,
-            "height": 1
-          }
-        }
-      },
-      "integration": {
-        "type": null,
-        "properties": []
-      }
-    },
-    {
-      "id": "000308ad-97fe-43b1-8a02-0d67b604dccb",
-      "name": "Sonarr",
-      "url": "http://192.168.3.131:8989",
-      "appearance": {
-        "iconUrl": "https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/png/sonarr.png",
-        "appNameStatus": "normal",
-        "appNameFontSize": 16,
-        "positionAppName": "column",
-        "lineClampAppName": 1
-      },
-      "network": {
-        "enabledStatusChecker": true,
-        "statusCodes": [
-          "200",
-          "301",
-          "302",
-          "304",
-          "307",
-          "308"
-        ]
-      },
-      "behaviour": {
-        "isOpeningNewTab": true,
-        "externalUrl": "http://192.168.3.131:8989"
-      },
-      "area": {
-        "type": "wrapper",
-        "properties": {
-          "id": "default"
-        }
-      },
-      "shape": {
-        "lg": {
-          "location": {
-            "x": 1,
-            "y": 1
-          },
-          "size": {
-            "width": 1,
-            "height": 1
-          }
-        }
-      },
-      "integration": {
-        "type": null,
-        "properties": []
       }
     }
   ],
@@ -560,7 +419,7 @@
         },
         "lg": {
           "location": {
-            "x": 0,
+            "x": 1,
             "y": 0
           },
           "size": {
@@ -613,22 +472,22 @@
         },
         "lg": {
           "location": {
-            "x": 2,
+            "x": 0,
             "y": 0
           },
           "size": {
-            "width": 2,
+            "width": 1,
             "height": 1
           }
         }
       }
     },
     {
-      "id": "86b1921f-efa7-410f-92dd-79553bf3264d",
+      "id": "82d20f18-80cf-4c0d-a1ff-987b06a0908c",
       "type": "notebook",
       "properties": {
         "showToolbar": true,
-        "content": "<h2><strong>Dewald's Server</strong></h2>"
+        "content": "<h1>FuZzy's HomeLab</h1><p>Home base for all media and storage things</p><hr><h2>How does it work?</h2><ul><li><p>Watch movies &amp; shows: <strong>Plex</strong></p></li><li><p>Download Movies &amp; Series: <strong>Radarr &amp; Sonarr</strong></p></li></ul><p></p>"
       },
       "area": {
         "type": "wrapper",
@@ -654,7 +513,7 @@
           },
           "size": {
             "width": 3,
-            "height": 4
+            "height": 2
           }
         },
         "lg": {
@@ -664,7 +523,7 @@
           },
           "size": {
             "width": 3,
-            "height": 3
+            "height": 2
           }
         }
       }

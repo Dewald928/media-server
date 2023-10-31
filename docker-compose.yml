@@ -10,7 +10,7 @@ services:
       - TZ=$TZ
       - WEBUI_PORT=8090
     volumes:
-      - $ROOT_DIR/config/qbt:/config
+      - ./config/qbt:/config
       - ${ROOT_DIR}/torrents:/downloads
     ports:
       - 8090:8090
@@ -29,7 +29,7 @@ services:
       - PGID=$PGID
       - TZ=$TZ
     volumes:
-      - $ROOT_DIR/config/prowlarr:/config
+      - ./config/prowlarr:/config
     ports:
       - 9696:9696
     restart: unless-stopped
@@ -46,7 +46,7 @@ services:
       - TZ=$TZ
       - UMASK=022
     volumes:
-      - $ROOT_DIR/config/radarr:/config
+      - ./config/radarr:/config
       - $ROOT_DIR:/data
     ports:
       - 7878:7878
@@ -64,7 +64,7 @@ services:
       - TZ=$TZ
       - UMASK=022
     volumes:
-      - $ROOT_DIR/config/sonarr:/config
+      - ./config/sonarr:/config
       - $ROOT_DIR:/data
     ports:
       - 8989:8989
@@ -84,7 +84,7 @@ services:
       - TZ=$TZ
       - UMASK=022
     volumes:
-      - $ROOT_DIR/config/readarr:/config
+      - ./config/readarr:/config
       - $ROOT_DIR:/data
     restart: unless-stopped
     networks:
@@ -106,7 +106,7 @@ services:
     container_name: tautulli
     restart: unless-stopped
     volumes:
-      - $ROOT_DIR/config/tautulli:/config
+      - ./config/tautulli:/config
     environment:
       - PUID=$PUID
       - PGID=$PGID
