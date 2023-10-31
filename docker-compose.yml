@@ -114,6 +114,17 @@ services:
     ports:
       - 8181:8181
 
+  audiobookshelf:
+    container_name: audiobookshelf
+    image: ghcr.io/advplyr/audiobookshelf:latest
+    ports:
+      - 13378:80
+    volumes:
+      - $ROOT_DIR/media/books:/audiobooks
+      - $ROOT_DIR/media/books/podcasts:/podcasts
+      - ./config/audiobookshelf/metadata:/metadata
+      - ./config/audiobookshelf:/config
+
 networks:
   arr:
     name: arr
